@@ -42,7 +42,7 @@ export function createTable(createQuery: string, searchQuery: string) {
 }
 
 export async function insertData(insertQuery: string, params: any) {
-  console.log('insertData called **********', insertQuery, params);
+  //console.log('insertData called **********', insertQuery, params);
   if (!db) {
     db = createConnection();
   }
@@ -51,9 +51,9 @@ export async function insertData(insertQuery: string, params: any) {
       insertQuery,
       params,
       (tx, results) => {
-        console.log('results ********* ', results);
+        //console.log('results ********* ', results);
         if (results.rowsAffected > 0) {
-          console.log('Inserted sucessfully... ********* ', results);
+          //console.log('Inserted sucessfully... ********* ', results);
         }
       },
       err => {
@@ -62,6 +62,27 @@ export async function insertData(insertQuery: string, params: any) {
     );
   });
 }
+
+export const retriveData = async (selectQuery: string) => {
+  await db.transaction( txx => {
+    txx.executeSql(
+      selectQuery,
+      [],
+      (tx, resultss) => {
+        var temp = [];
+        console.log('retriveData Data**************');
+        for (let i = 0; i < resultss.rows.length; ++i) {
+          temp.push(resultss.rows.item(i));
+        }
+        console.log('Data**************', temp?.length);
+        return temp;
+      },
+      err => {
+        console.log('error in retriveData********************', err);
+      },
+    );
+  });
+};
 
 export async function clearDB() {
   if (!db) {

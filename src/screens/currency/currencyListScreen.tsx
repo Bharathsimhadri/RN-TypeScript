@@ -1,35 +1,51 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect,useNavigation} from '@react-navigation/native';
 
-import {getCurrencyList} from '../../services/currency/getCurrency';
+import {createTable, insertData} from '../../constant/local-db';
 import {
   CREATE_CURRENCY_QUERY,
   INSERT_CURRENCY_QUERY,
   SEARCH_CURRENCY_QUERY,
 } from '../../constant/query-constants';
-import {createTable, insertData} from '../../constant/local-db';
+import {getCurrencyList} from '../../services/currency/getCurrency';
+import Loader from '../../components/commonComponents/Loader';
 
 const CurrencyListScreen = () => {
   const dispatch = useDispatch();
+  const navigation=useNavigation();
 
   const fetchedCurrencies = useSelector(
     state => state.currencyReducer?.GetCurrencySuccess,
   );
+
+  const [isLoaderBusy, setIsLoaderBusy] = useState(false);
   const [dsiplayedCurrencies, setDsiplayedCurrencies] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
       createTable(CREATE_CURRENCY_QUERY, SEARCH_CURRENCY_QUERY);
+      setIsLoaderBusy(true);
       dispatch(getCurrencyList());
+      setIsLoaderBusy(false);
     }, []),
   );
 
   useEffect(() => {
     setDsiplayedCurrencies(fetchedCurrencies);
   }, [fetchedCurrencies]);
+
+  useEffect(() => {
+    console.log('isLoaderBusy********', isLoaderBusy);
+  }, [isLoaderBusy]);
 
   const onItemTapped = async (item: any) => {
     var index = dsiplayedCurrencies.findIndex(
@@ -39,9 +55,30 @@ const CurrencyListScreen = () => {
     await insertData(INSERT_CURRENCY_QUERY, params);
   };
 
+  const navigateToFavouritesScreen=()=>{
+    navigation.navigate('favouriteCurrencyScreen');
+  }
+
+  const onAddStoreClicked = async () => {
+    var row = 0;
+    setIsLoaderBusy(true);
+    dsiplayedCurrencies.every(async element => {
+      var index = dsiplayedCurrencies.findIndex(
+        country => country.currency == element.currency,
+      );
+      var params = [index, element.name, element.currency];
+      await insertData(INSERT_CURRENCY_QUERY, params);
+      if (row >= 30) {
+        return;
+      }
+      row++;
+    });
+    setIsLoaderBusy(false);
+  };
+
   const renderListItem = (item: any) => {
     return (
-      <TouchableOpacity onPress={() => onItemTapped(item.item)}>
+      <TouchableOpacity>
         <View
           style={{
             flexDirection: 'row',
@@ -53,10 +90,11 @@ const CurrencyListScreen = () => {
           <Text
             numberOfLines={1}
             style={{
+              color: 'black',
               flex: 1,
               textAlign: 'left',
-              fontSize: 20,
-              fontWeight: 'bold',
+              fontSize: 18,
+              fontWeight: '500',
             }}>
             {item?.item?.name}
           </Text>
@@ -66,7 +104,7 @@ const CurrencyListScreen = () => {
               flex: 1,
               textAlign: 'right',
               fontSize: 16,
-              fontWeight: 'bold',
+              fontWeight: '200',
             }}>
             {item?.item?.currency}
           </Text>
@@ -76,34 +114,71 @@ const CurrencyListScreen = () => {
   };
 
   return (
-    <FlatList
-      keyExtractor={() => Math.random().toString()}
-      data={dsiplayedCurrencies}
-      ListEmptyComponent={() => {
-        return (
-          <View
-            style={{
-              alignItems: 'center',
-              alignContent: 'center',
-              height: '100%',
-              flex: 1,
-              justifyContent: 'center',
-              width: '100%',
-            }}>
-            <Text
+    <View>
+      <FlatList
+        keyExtractor={() => Math.random().toString()}
+        data={dsiplayedCurrencies}
+        ListHeaderComponent={() => {
+          return (
+            <View>
+              <TouchableOpacity
+                onPress={() => onAddStoreClicked()}
+                style={{padding: 15, backgroundColor: 'blue', margin: 10}}>
+                <Text
+                  style={{
+                    color: 'white',
+                    flex: 1,
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontWeight: '200',
+                  }}>
+                  Add to store +
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigateToFavouritesScreen()}
+                style={{padding: 15, backgroundColor: 'blue', margin: 10}}>
+                <Text
+                  style={{
+                    color: 'white',
+                    flex: 1,
+                    textAlign: 'center',
+                    fontSize: 16,
+                    fontWeight: '200',
+                  }}>
+                  get from store +
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }}
+        ListEmptyComponent={() => {
+          return (
+            <View
               style={{
-                color: 'green',
-                textAlign: 'center',
-                fontSize: 20,
-                fontWeight: 'bold',
+                alignItems: 'center',
+                alignContent: 'center',
+                height: '100%',
+                flex: 1,
+                justifyContent: 'center',
+                width: '100%',
               }}>
-              Loading.....
-            </Text>
-          </View>
-        );
-      }}
-      renderItem={renderListItem}
-    />
+              <Text
+                style={{
+                  color: 'green',
+                  textAlign: 'center',
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                }}>
+                Loading.....
+              </Text>
+            </View>
+          );
+        }}
+        renderItem={renderListItem}
+      />
+      <Loader isVisible={isLoaderBusy} />
+    </View>
   );
 };
 
