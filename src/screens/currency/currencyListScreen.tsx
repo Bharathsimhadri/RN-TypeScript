@@ -4,6 +4,7 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
+  Modal,
   View,
 } from 'react-native';
 
@@ -177,7 +178,13 @@ const CurrencyListScreen = () => {
         }}
         renderItem={renderListItem}
       />
-      <Loader isVisible={isLoaderBusy} />
+      <Modal
+        visible={isLoaderBusy}
+        statusBarTranslucent={true}
+        transparent={true}
+        onRequestClose={() => setIsLoaderBusy(false)}>
+        <Loader />
+      </Modal>
     </View>
   );
 };

@@ -63,6 +63,30 @@ export async function insertData(insertQuery: string, params: any) {
   });
 }
 
+export const updateData = (updateQuery:string,params:any) => {
+  db.transaction(tx => {
+    tx.executeSql(
+      updateQuery,
+      params,
+      (tx, results) => {
+        console.log('Table Updated');
+      },
+    );
+  });
+};
+
+export const deleteData = (deleteQuery:string,params:any) => {
+  db.transaction(tx => {
+    tx.executeSql(
+      deleteQuery,
+      params,
+      (tx, results) => {
+        console.log('deleted table');
+      },
+    );
+  });
+};
+
 export const retriveData = async (selectQuery: string) => {
   await db.transaction( txx => {
     txx.executeSql(
@@ -70,11 +94,11 @@ export const retriveData = async (selectQuery: string) => {
       [],
       (tx, resultss) => {
         var temp = [];
-        console.log('retriveData Data**************');
+        //console.log('retriveData Data**************');
         for (let i = 0; i < resultss.rows.length; ++i) {
           temp.push(resultss.rows.item(i));
         }
-        console.log('Data**************', temp?.length);
+        //console.log('Data**************', temp?.length);
         return temp;
       },
       err => {

@@ -115,7 +115,7 @@ const FavouriteCurrencyScreen = () => {
                 fontSize: 20,
                 fontWeight: 'bold',
               }}>
-              Loading.....
+              No data available...
             </Text>
           </View>
         );
