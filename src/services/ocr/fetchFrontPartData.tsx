@@ -10,7 +10,7 @@ export async function getFrontPartDataAsync(base64: string) {
   await axios
     .post(
       MOROCCO_ID_FRONT_URL,
-      {image: base64},
+      {"data": base64},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export async function getFrontPartDataAsync(base64: string) {
       }
     })
     .catch(err => {
-      console.log('getFrontPartDataAsync error***********', err);
+      console.log('getFrontPartDataAsync error***********',err?.response?.data);
     });
 }
 
@@ -38,7 +38,7 @@ export async function getBackPartDataAsync(base64: string) {
   await axios
     .post(
         MOROCCO_ID_BACK_URL,
-      {image: base64},
+      {"data": base64},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -50,14 +50,14 @@ export async function getBackPartDataAsync(base64: string) {
     .then(response => {
       console.log(
         'getBackPartDataAsync*******',
-        JSON.stringify(response.data.data),
+        JSON.stringify(response?.data?.data),
       );
       if (response) {
         return {};
       }
     })
     .catch(err => {
-      console.log('getBackPartDataAsync error***********', err.response.data);
+      console.log('getBackPartDataAsync error***********', err?.response?.data);
     });
 }
 

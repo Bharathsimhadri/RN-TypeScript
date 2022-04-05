@@ -130,6 +130,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    lintOptions { 
+        checkReleaseBuilds false 
+    }
     defaultConfig {
         applicationId "com.typescript_basics"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -152,6 +155,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('ocr.keystore')
+            storePassword 'ocr@123'
+            keyAlias 'ocr'
+            keyPassword 'ocr@123'
+        }
     }
     buildTypes {
         debug {
@@ -165,7 +174,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
