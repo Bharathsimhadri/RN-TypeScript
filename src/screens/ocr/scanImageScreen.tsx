@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  Modal
+  Modal,
+  ScrollView
 } from 'react-native';
 
 import {useFocusEffect} from '@react-navigation/native';
@@ -33,6 +34,7 @@ const ScanImageScreen = () => {
   const [isFrontSelected, setIsFrontSelected] = useState(false);
   const [isToShowImageSelection, setIsToShowImageSelection] = useState(false);
   const [uri, setUri] = useState('');
+  const [nfcData, setNfcData] = useState('No data');
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -82,7 +84,9 @@ const ScanImageScreen = () => {
 
   const _notifyListener = response => {
     NFC.stopScan();
-    Alert.alert('Sucess', 'Data' + response?.from_device?.data[0][0]?.data, [
+    var data = JSON.stringify(response);
+    setNfcData(data);
+    Alert.alert('Sucess', 'Data:-' + data, [
       {
         text: 'Ok',
         onPress: () => {
@@ -106,18 +110,14 @@ const ScanImageScreen = () => {
 
   async function initializeNFCmanager() {
     await nfcManager?.start().catch(err => {
-      Alert.alert(
-        'Error',
-        ' Your device doesnt Support NFC reading, Device',
-        [
-          {
-            text: 'Ok',
-            onPress: () => {
-              console.log('Ok clicked');
-            },
+      Alert.alert('Error', ' Your device doesnt Support NFC reading, Device', [
+        {
+          text: 'Ok',
+          onPress: () => {
+            console.log('Ok clicked');
           },
-        ],
-      );
+        },
+      ]);
     });
   }
   const nfcManagerAsync = async () => {
@@ -252,6 +252,19 @@ const ScanImageScreen = () => {
             </Text>
           </View>
         </TouchableOpacity> */}
+        <View
+          style={{
+            height: '70%',
+          }}>
+          <Text
+            style={{
+              color: 'gray',
+              textAlignVertical: 'center',
+              textAlign: 'center',
+            }}>
+            {nfcData}
+          </Text>
+        </View>
       </View>
       <Modal
         visible={isToShowImageSelection}

@@ -7,6 +7,7 @@ import AddEmployee from '../screens/crudOperations/addEmployee';
 import CurrencyListScreen from '../screens/currency/currencyListScreen';
 import FavouriteCurrencyScreen from '../screens/currency/favouriteCurrencyScreen';
 import HomeScreen from '../screens/homeScreen';
+import Maps from '../screens/geoFencing/maps';
 import Operations from '../screens/crudOperations/operations';
 import ScanImageScreen from '../screens/ocr/scanImageScreen';
 const Stack = createStackNavigator();
@@ -14,7 +15,7 @@ const Stack = createStackNavigator();
 const RootNavigation = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="homeScreen">
+      <Stack.Navigator initialRouteName="maps">
         <Stack.Screen
           name="currencyListScreen"
           component={CurrencyListScreen}
@@ -38,6 +39,10 @@ const RootNavigation = () => {
         <Stack.Screen
           name="operations"
           component={Operations}
+        />
+         <Stack.Screen
+          name="maps"
+          component={Maps}
         />
       </Stack.Navigator>
     </NavigationContainer>
